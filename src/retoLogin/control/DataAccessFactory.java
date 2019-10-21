@@ -6,9 +6,16 @@
 package retoLogin.control;
 
 /**
- *
- * @author 2dam
+ * The factory of the Data Access
+ * @author Jon
  */
 public class DataAccessFactory {
-    
+    private static DataAccess dataAccess;
+
+	public static DataAccess getDataAccess() {
+		if (dataAccess == null) {
+			dataAccess = new DataAccessImplementation();
+		}
+		return dataAccess;
+	}
 }

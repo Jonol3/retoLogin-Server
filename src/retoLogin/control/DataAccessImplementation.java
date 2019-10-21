@@ -9,6 +9,6 @@ package retoLogin.control;
  *
  * @author 2dam
  */
-public class DataAccessImplementation {
+public class DataAccessImplementation implements DataAccess {
     
 }

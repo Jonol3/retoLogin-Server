@@ -43,7 +43,7 @@ public class DataAccessPool {
         }
     }
     /**
-     * Returns a connection to the pool if who was using it no needs no more
+     * Returns a connection to the pool if who was using it no needs no more 
      * @param connection The connection to liberate
      * @throws SQLException If something go wrong this exception will be shown
      */

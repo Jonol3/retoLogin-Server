@@ -5,10 +5,37 @@
  */
 package retoLogin.control;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import retoLogin.User;
+import retoLogin.exceptions.*;
+
 /**
- *
- * @author 2dam
+ * This is the interface of the Data Access methods.
+ * @author Jon
  */
+
 public interface DataAccess {
     
+    /**
+     * Checks if there is a user with that login and password, and returns the User data.
+     * @param loginData A User with the login and password.
+     * @return A User with all the data.
+     * @throws ClassNotFoundException DB Exception
+     * @throws SQLException DB Exception
+     * @throws IOException DB Exception
+     * @throws BadLoginException The user with that login is not in the DB.
+     * @throws BadPasswordException That password is not correct for that login.
+     */
+    public User validateUser (User loginData) throws ClassNotFoundException, SQLException, IOException, BadLoginException, BadPasswordException;
+    
+    /**
+     * Inserts a new user in the DB.
+     * @param signupData A User with the data of the new user.
+     * @throws ClassNotFoundException DB Exception
+     * @throws SQLException DB Exception
+     * @throws IOException DB Exception
+     * @throws AlreadyExistsException The login of the new user already exists in the DB.
+     */
+    public void insertUser (User signupData) throws ClassNotFoundException, SQLException, IOException, AlreadyExistsException;
 }

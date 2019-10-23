@@ -6,16 +6,19 @@
 package retoLogin.control;
 
 /**
- * The factory of the Data Access
+ * The factory of the Data Access and the Data Access Pool.
  * @author Jon
  */
 public class DataAccessFactory {
-    private static DataAccess dataAccess;
+    private static DataAccessPool dataAccessPool;
 
-	public static DataAccess getDataAccess() {
-		if (dataAccess == null) {
-			dataAccess = new DataAccessImplementation();
-		}
-		return dataAccess;
+	public static DataAccessPool getDataAccessPool(String url, String user, String password) {
+            if (dataAccessPool == null) {
+                dataAccessPool = new DataAccessPool(url, user, password);
+            }
+            return dataAccessPool;
+	}
+        public static DataAccess getDataAccess() {
+            return new DataAccessImplementation();
 	}
 }

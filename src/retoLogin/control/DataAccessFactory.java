@@ -19,6 +19,6 @@ public class DataAccessFactory {
             return dataAccessPool;
 	}
         public static DataAccess getDataAccess() {
-            return new DataAccessImplementation();
+            return new DataAccessImplementation(dataAccessPool);
 	}
 }

@@ -17,6 +17,11 @@ import retoLogin.exceptions.*;
 
 public interface DataAccess {
     
+    
+    public void connect() throws SQLException;
+    
+    public void disconnect () throws SQLException;
+    
     /**
      * Checks if there is a user with that login and password, and returns the User data.
      * @param loginData A User with the login and password.

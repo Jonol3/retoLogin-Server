@@ -39,9 +39,6 @@ public class DataAccessImplementation implements DataAccess {
         if(stmt != null){
             stmt.close();
         }
-        if(connection != null){
-            connection.close();
-        }
     }
     
     @Override
@@ -63,7 +60,7 @@ public class DataAccessImplementation implements DataAccess {
                     user.setStatusString(result.getString("status"));
                     user.setPrivilegeString(result.getString("privilege"));
                     user.setPassword(result.getString("password"));
-                    user.setLastAccess(result.getTimestamp("lastAccess"));
+                    user.setLastAccess(Timestamp.from(Instant.now()));
                     user.setLastPasswordChange(result.getTimestamp("lastPasswordChange"));
                     sql = "UPDATE user SET lastAccess = ? WHERE login = ?";
                     stmt = connection.prepareStatement(sql);
@@ -92,16 +89,13 @@ public class DataAccessImplementation implements DataAccess {
             stmt.setString(1, signupData.getLogin());
             stmt.setString(2, signupData.getEmail());
             stmt.setString(3, signupData.getFullName());
-            stmt.setString(4, signupData.getStatusString());
-            stmt.setString(5, signupData.getPrivilegeString());
+            stmt.setInt(4, signupData.getStatus());
+            stmt.setInt(5, signupData.getPrivilege());
             stmt.setString(6, signupData.getPassword());
-            stmt.setTimestamp(7, signupData.getLastAccess());
-            stmt.setTimestamp(8, signupData.getLastPasswordChange());
+            stmt.setTimestamp(7, Timestamp.from(Instant.now()));
+            stmt.setTimestamp(8, Timestamp.from(Instant.now()));
             stmt.executeUpdate();
         } finally {
             this.disconnect();
         }
     }
-    }
-    
-}

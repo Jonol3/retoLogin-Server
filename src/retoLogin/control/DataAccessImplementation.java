@@ -85,7 +85,23 @@ public class DataAccessImplementation implements DataAccess {
 
     @Override
     public void insertUser(User signupData) throws ClassNotFoundException, SQLException, IOException, AlreadyExistsException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            this.connect();
+            String sql = "INSERT INTO user(login, email, fullName, status, privilege, password, lastAccess, lastPasswordChange) values (?, ?, ?, ?, ?, ?, ?, ?)";
+            stmt = connection.prepareStatement(sql);
+            stmt.setString(1, signupData.getLogin());
+            stmt.setString(2, signupData.getEmail());
+            stmt.setString(3, signupData.getFullName());
+            stmt.setString(4, signupData.getStatusString());
+            stmt.setString(5, signupData.getPrivilegeString());
+            stmt.setString(6, signupData.getPassword());
+            stmt.setTimestamp(7, signupData.getLastAccess());
+            stmt.setTimestamp(8, signupData.getLastPasswordChange());
+            stmt.executeUpdate();
+        } finally {
+            this.disconnect();
+        }
+    }
     }
     
 }

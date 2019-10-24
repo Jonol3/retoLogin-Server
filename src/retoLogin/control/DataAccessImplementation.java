@@ -84,17 +84,25 @@ public class DataAccessImplementation implements DataAccess {
     public void insertUser(User signupData) throws ClassNotFoundException, SQLException, IOException, AlreadyExistsException {
         try {
             this.connect();
-            String sql = "INSERT INTO user(login, email, fullName, status, privilege, password, lastAccess, lastPasswordChange) values (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "SELECT * FROM user WHERE login = ?";
             stmt = connection.prepareStatement(sql);
             stmt.setString(1, signupData.getLogin());
-            stmt.setString(2, signupData.getEmail());
-            stmt.setString(3, signupData.getFullName());
-            stmt.setInt(4, signupData.getStatus());
-            stmt.setInt(5, signupData.getPrivilege());
-            stmt.setString(6, signupData.getPassword());
-            stmt.setTimestamp(7, Timestamp.from(Instant.now()));
-            stmt.setTimestamp(8, Timestamp.from(Instant.now()));
-            stmt.executeUpdate();
+            ResultSet result = stmt.executeQuery();
+            if(!result.next()) {
+                sql = "INSERT INTO user(login, email, fullName, status, privilege, password, lastAccess, lastPasswordChange) values (?, ?, ?, ?, ?, ?, ?, ?)";
+                stmt = connection.prepareStatement(sql);
+                stmt.setString(1, signupData.getLogin());
+                stmt.setString(2, signupData.getEmail());
+                stmt.setString(3, signupData.getFullName());
+                stmt.setInt(4, signupData.getStatus());
+                stmt.setInt(5, signupData.getPrivilege());
+                stmt.setString(6, signupData.getPassword());
+                stmt.setTimestamp(7, Timestamp.from(Instant.now()));
+                stmt.setTimestamp(8, Timestamp.from(Instant.now()));
+                stmt.executeUpdate();
+            } else {
+                throw new AlreadyExistsException(null);
+            }
         } finally {
             this.disconnect();
         }

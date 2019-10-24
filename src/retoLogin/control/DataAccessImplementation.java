@@ -8,6 +8,7 @@ package retoLogin.control;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import retoLogin.User;
 import retoLogin.exceptions.*;
@@ -20,10 +21,6 @@ public class DataAccessImplementation implements DataAccess {
     private DataAccessPool dataAccessPool;
     private Connection connection;
     private PreparedStatement stmt;
-
-    public DataAccessImplementation(DataAccessPool dataAccessPool) {
-        this.dataAccessPool = dataAccessPool;
-    }
     
     @Override
     public void connect() throws SQLException {
@@ -43,7 +40,36 @@ public class DataAccessImplementation implements DataAccess {
     
     @Override
     public User validateUser(User loginData) throws ClassNotFoundException, SQLException, IOException, BadLoginException, BadPasswordException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        User user = null;
+        try {
+            this.connect();
+            String sql = "SELECT * FROM user WHERE login = ?";
+            stmt = connection.prepareStatement(sql);
+            stmt.setString(1, loginData.getLogin());
+            ResultSet result = stmt.executeQuery();
+            if(result.next()) {
+                if (loginData.getPassword().equals(result.getString("password"))) {
+                    user = new User();
+                    user.setId(result.getInt("id"));
+                    user.setLogin(result.getString("login"));
+                    user.setEmail(result.getString("email"));
+                    user.setFullName("fullName");
+                    user.setStatus(result.getInt("status"));
+                    user.setPrivilege(result.getInt("privilege"));
+                    user.setPassword(result.getString("password"));
+                    user.setLastAccess(result.getTimestamp("lastAccess"));
+                    user.setLastPasswordChange(result.getTimestamp("lastPasswordChange"));
+                } else {
+                    throw new BadPasswordException(null);
+                }
+            } else {
+                throw new BadLoginException(null);
+            }
+                
+        } finally {
+            this.disconnect();
+	}
+        return user;
     }
 
     @Override

@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class Server {
     private final int PORT = 5001;
     private Logger LOGGER =  Logger.getLogger("retoLogin.Server");
-    public void iniciar() throws ClassNotFoundException{
+    public void start() throws ClassNotFoundException{
         ServerSocket server = null;
         Socket client = null;
         ObjectInputStream input = null;
@@ -39,7 +39,9 @@ public class Server {
                     "\n"+user.getEmail()+"\n"+user.getPassword()+"\n"+"Type: "+number;
             LOGGER.info("Message get: \n"+messageOut);
             output.writeObject(messageOut);
-        }catch(IOException | ClassNotFoundException e){
+        }catch(IOException e){
+            LOGGER.severe("Error: "+e.getLocalizedMessage());
+        }catch(ClassNotFoundException e){
             LOGGER.severe("Error: "+e.getLocalizedMessage());
         }catch(Exception e){
             LOGGER.severe("Error: "+e.getLocalizedMessage());
@@ -61,5 +63,10 @@ public class Server {
                 LOGGER.severe("Error: "+e.getLocalizedMessage());
             }
         }
+        
     }
+    public static void main(String[] args) throws ClassNotFoundException{
+            Server server = new Server();
+            server.start();
+        }
 }

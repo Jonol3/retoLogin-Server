@@ -17,7 +17,7 @@ import retoLogin.exceptions.*;
 
 /**
  * This is the class that implements the Data Access methods.
- * @author Jon
+ * @author Jon Calvo Gaminde
  */
 public class DataAccessImplementation implements DataAccess {
     private DataAccessPool dataAccessPool;

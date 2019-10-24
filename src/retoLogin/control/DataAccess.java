@@ -12,14 +12,21 @@ import retoLogin.exceptions.*;
 
 /**
  * This is the interface of the Data Access methods.
- * @author Jon
+ * @author Jon Calvo Gaminde
  */
 
 public interface DataAccess {
     
-    
+    /**
+     * Gets a connection from the pool.
+     * @throws SQLException DB Exception
+     */
     public void connect() throws SQLException;
     
+    /**
+     * Releases the connection, to be added in the pool.
+     * @throws SQLException DB Exception
+     */
     public void disconnect () throws SQLException;
     
     /**

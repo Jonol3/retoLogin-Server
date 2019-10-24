@@ -17,56 +17,27 @@ import java.util.logging.Logger;
  * @author Unai Pérez Sánchez
  */
 public class Server {
-    private final int PORT = 5001;
-    private Logger LOGGER =  Logger.getLogger("retoLogin.Server");
-    public void start() throws ClassNotFoundException{
-        ServerSocket server = null;
-        Socket client = null;
-        ObjectInputStream input = null;
-        ObjectOutputStream output = null;
-        try{
-            server = new ServerSocket(PORT);
-            LOGGER.info("Waiting for a client to connect");
-            client = server.accept();
-            LOGGER.info("Client connected");
-            
-            input = new ObjectInputStream(client.getInputStream());
-            output = new ObjectOutputStream(client.getOutputStream());
-            Message message = (Message) input.readObject();
-            User user = message.getUser();
-            int number = message.getType();
-            String messageOut = "User: "+"\n"+user.getFullName()+"\n"+user.getLogin()+
-                    "\n"+user.getEmail()+"\n"+user.getPassword()+"\n"+"Type: "+number;
-            LOGGER.info("Message get: \n"+messageOut);
-            output.writeObject(messageOut);
-        }catch(IOException e){
-            LOGGER.severe("Error: "+e.getLocalizedMessage());
-        }catch(ClassNotFoundException e){
-            LOGGER.severe("Error: "+e.getLocalizedMessage());
-        }catch(Exception e){
-            LOGGER.severe("Error: "+e.getLocalizedMessage());
-        }finally{
-            try{
-                if(server != null){
-                    server.close();
-                }
-                if(client != null){
-                    client.close();
-                }
-                if(input != null){
-                    input.close();
-                }
-                if(output != null){
-                    output.close();
-                }
-            }catch(IOException e){
-                LOGGER.severe("Error: "+e.getLocalizedMessage());
+    private static final int PORT = 5001;
+    private static final int MAX_NUM_THRD = 10;
+    private static final int NUM_THRD_ACT = 0;
+    private static Logger LOGGER =  Logger.getLogger("retoLogin.Server");
+    
+    public static void main(String[] args) {
+        ServerSocket serverSocket;
+        LOGGER.info("The server is starting...");
+        try {
+            serverSocket = new ServerSocket(PORT);
+            LOGGER.info("Server started on the port "+PORT);
+            int sessionID = 0;
+            while(true){
+                Socket socket;
+                socket = serverSocket.accept();
+                LOGGER.warning("New connection inbound: "+socket);
+                ((ServerThread) new ServerThread(socket, sessionID)).start();
+                sessionID++;
             }
+        } catch (IOException e) {
+            LOGGER.severe("Error: "+e.getLocalizedMessage());
         }
-        
     }
-    public static void main(String[] args) throws ClassNotFoundException{
-            Server server = new Server();
-            server.start();
-        }
 }

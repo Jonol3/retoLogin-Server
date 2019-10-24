@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import retoLogin.User;
 import retoLogin.exceptions.*;
 
@@ -21,6 +23,10 @@ public class DataAccessImplementation implements DataAccess {
     private DataAccessPool dataAccessPool;
     private Connection connection;
     private PreparedStatement stmt;
+
+    public DataAccessImplementation(DataAccessPool dataAccessPool) {
+        this.dataAccessPool = dataAccessPool;
+    }
     
     @Override
     public void connect() throws SQLException {
@@ -53,12 +59,17 @@ public class DataAccessImplementation implements DataAccess {
                     user.setId(result.getInt("id"));
                     user.setLogin(result.getString("login"));
                     user.setEmail(result.getString("email"));
-                    user.setFullName("fullName");
-                    user.setStatus(result.getInt("status"));
-                    user.setPrivilege(result.getInt("privilege"));
+                    user.setFullName(result.getString("fullName"));
+                    user.setStatusString(result.getString("status"));
+                    user.setPrivilegeString(result.getString("privilege"));
                     user.setPassword(result.getString("password"));
                     user.setLastAccess(result.getTimestamp("lastAccess"));
                     user.setLastPasswordChange(result.getTimestamp("lastPasswordChange"));
+                    sql = "UPDATE user SET lastAccess = ? WHERE login = ?";
+                    stmt = connection.prepareStatement(sql);
+                    stmt.setTimestamp(1, Timestamp.from(Instant.now()));
+                    stmt.setString(2, loginData.getLogin());
+                    stmt.executeUpdate();
                 } else {
                     throw new BadPasswordException(null);
                 }

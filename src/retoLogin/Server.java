@@ -22,7 +22,7 @@ import retoLogin.exceptions.*;
  */
 public class Server {
     private static final int PORT = 5001;
-    private static final int MAX_NUM_THRD = 3;
+    private static final int MAX_NUM_THRD = 10;
     private static int NUM_THRD_ACT = 0;
     private static Logger LOGGER =  Logger.getLogger("retoLogin.Server");
     
@@ -50,28 +50,24 @@ public class Server {
     
     public static synchronized void setActiveThread(Socket socket) {
         NUM_THRD_ACT++;
-        Message message = new Message();
         if(NUM_THRD_ACT>MAX_NUM_THRD){
             try {
                 throw new NoThreadAvailableException("No more threads available");
             } catch (NoThreadAvailableException e) {
                 LOGGER.severe("Error: no more threads available");
-                try {
-                    ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
-                    input.readObject();
-                    message.setType(2);
-                    ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
-                    output.writeObject(message);
-                    NUM_THRD_ACT--;
-                    socket.close();
-                } catch (IOException | ClassNotFoundException ex1) {
-                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex1);
-                }
+//                    ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+//                    input.readObject();
+//                    message.setType(2);
+//                    ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+//                    output.writeObject(message);
+                ((ServerThread) new ServerThread(socket,1)).start();
+                NUM_THRD_ACT--;
+//                    socket.close();
             }
         }else{
             LOGGER.info("Threads Active: "+NUM_THRD_ACT);
             LOGGER.warning("New connection inbound: "+socket);
-            ((ServerThread) new ServerThread(socket)).start();
+            ((ServerThread) new ServerThread(socket,0)).start();
         }
     }
     

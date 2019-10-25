@@ -26,15 +26,13 @@ public class ServerThread extends Thread{
     private Socket socket;
     private ObjectInputStream input;
     private ObjectOutputStream output;
-    private int sessionID;
     private DataAccess dao = DataAccessFactory.getDataAccess();
     private Message messageToSend = new Message();
     private User userToSend;
     private int typeToSend;
 
-    public ServerThread(Socket socket, int sessionID) {
+    public ServerThread(Socket socket) {
         this.socket = socket;
-        this.sessionID = sessionID;
         try {
             input = new ObjectInputStream(socket.getInputStream());
             output = new ObjectOutputStream(socket.getOutputStream());
@@ -75,6 +73,8 @@ public class ServerThread extends Thread{
                     dao.insertUser(user);
                     LOGGER.info("The database opperation has been completed");
                     break;
+                case 3:
+                    Thread.sleep(5000000);
             }
             typeToSend = 0;
         } catch (BadLoginException | AlreadyExistsException e){
@@ -88,13 +88,16 @@ public class ServerThread extends Thread{
         typeToSend = 1;  
         } finally {
             try {
+                
                 messageToSend.setType(typeToSend);
                 output.writeObject(messageToSend);
             } catch (IOException e) {
                 LOGGER.severe("Socket error: "+e.getLocalizedMessage());
             } finally {
                 disconnect();
+                Server.threadDisconnected();
                 LOGGER.info("Connection finnished");
+                
             }
         }
     }

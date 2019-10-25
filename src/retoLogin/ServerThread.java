@@ -13,6 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import retoLogin.control.DataAccess;
 import retoLogin.control.DataAccessFactory;
+import retoLogin.exceptions.AlreadyExistsException;
+import retoLogin.exceptions.BadLoginException;
+import retoLogin.exceptions.BadPasswordException;
 
 /**
  *
@@ -63,30 +66,36 @@ public class ServerThread extends Thread{
                 case 1:
                     LOGGER.info("Thread is going to check the login info");
                     userToSend = dao.validateUser(user);
-                    LOGGER.info("Se ha terminado la operacion en la base de datos");
+                    LOGGER.info("The database opperation has been completed");
                     LOGGER.info("Database User: "+userToSend.getEmail()+" "+userToSend.getFullName());
-                    typeToSend = 0;
-                    messageToSend.setType(typeToSend);
                     messageToSend.setUser(userToSend);
-                    output.writeObject(messageToSend);
                     break;
                 case 2:
                     LOGGER.info("Thread is going to insert into the database the new user");
+                    dao.insertUser(user);
+                    LOGGER.info("The database opperation has been completed");
                     break;
             }
-        } catch (IOException e) {
-            LOGGER.severe("Error: "+e.getLocalizedMessage());
-        } catch (ClassNotFoundException e) {
-            LOGGER.severe("Error: "+e.getLocalizedMessage());
-        }catch (Exception e){
-            LOGGER.severe("Error: "+e.getLocalizedMessage());
-        }finally{
-            disconnect();
-            LOGGER.info("Connection finnished");
+            typeToSend = 0;
+        } catch (BadLoginException | AlreadyExistsException e){
+        LOGGER.severe("Error: "+e.getLocalizedMessage());
+        typeToSend = 3;
+        } catch (BadPasswordException e){
+        LOGGER.severe("Error: "+e.getLocalizedMessage());
+        typeToSend = 4;
+        } catch (Exception e){
+        LOGGER.severe("Error: "+e.getLocalizedMessage());
+        typeToSend = 1;  
+        } finally {
+            try {
+                messageToSend.setType(typeToSend);
+                output.writeObject(messageToSend);
+            } catch (IOException e) {
+                LOGGER.severe("Socket error: "+e.getLocalizedMessage());
+            } finally {
+                disconnect();
+                LOGGER.info("Connection finnished");
+            }
         }
-        
     }
-    
-    
-    
 }

@@ -26,7 +26,7 @@ public class Server {
     
     
     public static void main(String[] args) {
-        //ResourceBundle properties = ResourceBundle.getBundle("retoLogin.dbserver");
+        ResourceBundle properties = ResourceBundle.getBundle("retoLogin.dbserver");
         String url = "jdbc:mysql://" + "10.22.82.145:3306" + "/" + "reto1" + "?serverTimezone=Europe/Madrid";
         DataAccessFactory.getDataAccessPool(url, "root", "abcd*1234");
         ServerSocket serverSocket;
@@ -46,4 +46,5 @@ public class Server {
             LOGGER.severe("Error: "+e.getLocalizedMessage());
         }
     }
+    
 }

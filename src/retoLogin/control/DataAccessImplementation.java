@@ -68,10 +68,10 @@ public class DataAccessImplementation implements DataAccess {
                     stmt.setString(2, loginData.getLogin());
                     stmt.executeUpdate();
                 } else {
-                    throw new BadPasswordException(null);
+                    throw new BadPasswordException("Contraseña mal");
                 }
             } else {
-                throw new BadLoginException(null);
+                throw new BadLoginException("Login mal");
             }
                 
         } finally {
@@ -101,7 +101,7 @@ public class DataAccessImplementation implements DataAccess {
                 stmt.setTimestamp(8, Timestamp.from(Instant.now()));
                 stmt.executeUpdate();
             } else {
-                throw new AlreadyExistsException(null);
+                throw new AlreadyExistsException("Ya existe");
             }
         } finally {
             this.disconnect();

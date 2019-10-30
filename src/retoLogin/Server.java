@@ -5,13 +5,9 @@
  */
 package retoLogin;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import retoLogin.control.DataAccessFactory;
 import retoLogin.exceptions.*;
@@ -28,49 +24,46 @@ public class Server {
     
     
     public static void main(String[] args) {
-        ResourceBundle properties = ResourceBundle.getBundle("retoLogin.dbserver");
-        String url = "jdbc:mysql://" + properties.getString("dbHost") + "/" + properties.getString("dbName") + "?serverTimezone=Europe/Madrid";
-        DataAccessFactory.getDataAccessPool(url, properties.getString("dbUser"), properties.getString("dbPassword"));
+        ResourceBundle properties = ResourceBundle.getBundle("retoLogin.dbserver");//We load the properties file and save it on a variable
+        String url = "jdbc:mysql://" + properties.getString("dbHost") + "/" + properties.getString("dbName") + "?serverTimezone=Europe/Madrid";//Set the database connection URL
+        DataAccessFactory.getDataAccessPool(url, properties.getString("dbUser"), properties.getString("dbPassword"));//We set the user and the password for the database
         ServerSocket serverSocket;
         LOGGER.info("The server is starting...");
         try {
-            serverSocket = new ServerSocket(PORT);
+            serverSocket = new ServerSocket(PORT);//Started the server
             LOGGER.info("Server started on the port "+PORT);
-            while(true){
+            while(true){//The server will be always listening
                 Socket socket;
-                socket = serverSocket.accept();
-                Server.setActiveThread(socket);
+                socket = serverSocket.accept();//We accept the new connection
+                Server.setActiveThread(socket);//We are going to check if there are threads left
             }
-        } catch (IOException e) {
-            LOGGER.severe("Error: "+e.getLocalizedMessage());
-        } catch (Exception e){
+        } catch (Exception e){//Some unexcepted exception can happend
             LOGGER.severe("Error: "+e.getLocalizedMessage());
         }
     }
-    
+    /**
+     * This method checks first if there is any thread available and acts in consequence
+     * @param socket An object of type Socket
+     */
     public static synchronized void setActiveThread(Socket socket) {
-        NUM_THRD_ACT++;
-        if(NUM_THRD_ACT>MAX_NUM_THRD){
+        NUM_THRD_ACT++;//New active thread (we increment the counter by 1)
+        if(NUM_THRD_ACT>MAX_NUM_THRD){//If there are not more threads available
             try {
-                throw new NoThreadAvailableException("No more threads available");
-            } catch (NoThreadAvailableException e) {
+                throw new NoThreadAvailableException("No more threads available");//We throw the exception
+            } catch (NoThreadAvailableException e) {//And we catch it
                 LOGGER.severe("Error: no more threads available");
-//                    ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
-//                    input.readObject();
-//                    message.setType(2);
-//                    ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
-//                    output.writeObject(message);
-                ((ServerThread) new ServerThread(socket,1)).start();
-                NUM_THRD_ACT--;
-//                    socket.close();
+                ((ServerThread) new ServerThread(socket,1)).start();//We send the message to the client by an extra thread
+                NUM_THRD_ACT--;//When we finish we rest to the counter one
             }
-        }else{
+        }else{//If there are threads available, the operation will continue
             LOGGER.info("Threads Active: "+NUM_THRD_ACT);
             LOGGER.warning("New connection inbound: "+socket);
             ((ServerThread) new ServerThread(socket,0)).start();
         }
     }
-    
+    /**
+     * This method rest to the counter if any of active threads disconnected
+     */
     public static synchronized void threadDisconnected(){
         NUM_THRD_ACT--;
         LOGGER.info("Threads active: "+NUM_THRD_ACT);

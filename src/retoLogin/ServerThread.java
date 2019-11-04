@@ -17,11 +17,11 @@ import retoLogin.exceptions.BadLoginException;
 import retoLogin.exceptions.BadPasswordException;
 
 /**
- *
+ * The class used as connection for the clients.
  * @author Unai Pérez Sánchez
  */
 public class ServerThread extends Thread{
-    private Logger LOGGER = Logger.getLogger("retoLogin.ServerThread");
+    private static final Logger LOGGER = Logger.getLogger("retoLogin.ServerThread");
     private Socket socket;
     private ObjectInputStream input;
     private ObjectOutputStream output;
@@ -73,7 +73,7 @@ public class ServerThread extends Thread{
                     case 1://Is going to do the login
                         LOGGER.info("Thread is going to check the login info");
                         userToSend = dao.validateUser(user);//Stores the user in a User object if something go wrong is going to be empty
-                        LOGGER.info("The database opperation has been completed");
+                        LOGGER.info("The database operation has been completed");
                         if(!userToSend.equals(null)){
                             LOGGER.info("Database User: "+userToSend.getEmail()+" "+userToSend.getFullName());
                         }
@@ -113,7 +113,7 @@ public class ServerThread extends Thread{
             try {
                 input.readObject();//We read to liberate the pipe
                 messageToSend.setType(2);
-                output.writeObject(messageToSend);//We send the message to the client side with the code 2 that means that the server is bussy
+                output.writeObject(messageToSend);//We send the message to the client side with the code 2 that means that the server is busy
                 LOGGER.info("Thread is sending the exception");
             } catch (Exception e) {//Some exception unexpected may occur
                 LOGGER.severe("Error: "+e.getLocalizedMessage());

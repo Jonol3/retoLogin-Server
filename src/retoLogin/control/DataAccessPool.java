@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.Stack;
 
 /**
- *
+ * The class that creates and stores the connections
  * @author Unai Pérez Sánchez
  */
 public class DataAccessPool {

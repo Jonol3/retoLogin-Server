@@ -13,14 +13,14 @@ import retoLogin.control.DataAccessFactory;
 import retoLogin.exceptions.*;
 
 /**
- *
+ * The main class of the server.
  * @author Unai Pérez Sánchez, Jon Calvo Gaminde
  */
 public class Server {
+    private static final Logger LOGGER =  Logger.getLogger("retoLogin.Server");
     private static int port;
     private static int maxNumThrd;
     private static int numThrdAct = 0;
-    private static Logger LOGGER =  Logger.getLogger("retoLogin.Server");
     
     
     public static void main(String[] args) {
